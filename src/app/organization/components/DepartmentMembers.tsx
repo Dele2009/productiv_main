@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UsersRound, UserX } from "lucide-react";
+import { Loader2, UsersRound, UserX } from "lucide-react";
 import Image from "next/image";
 import {
   Dialog,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { AddDepartmentMemberModal } from "./AddDepartmentMemberModal";
 import axios from "axios";
+import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -33,17 +34,29 @@ export function DepartmentMembers({ departmentId, users }: Props) {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [deletingUser, setDeletingUser] = useState(false);
 
   const handleRemove = async () => {
     if (!selectedUser) return;
+    setDeletingUser(true);
+    const id = toast.loading("Removing member...");
     try {
       const res = await axios.delete(
         `/api/organization/departments/${departmentId}/employees/${selectedUser.id}`,
         { withCredentials: true }
       );
-      console.log(res)
+      console.log(res);
+      toast.dismiss(id);
+      toast.success("Member removed successfully");
+      setMembers((prev) => prev.filter((u) => u.id !== selectedUser!.id));
     } catch (err: any) {
-      console.log(err)
+      console.log(err);
+      toast.dismiss(id);
+      toast.error(err.response?.data?.error || "Failed to remove member");
+    } finally {
+      setOpenDialog(false);
+      setDeletingUser(false);
+      setSelectedUser(null);
     }
   };
 
@@ -100,6 +113,7 @@ export function DepartmentMembers({ departmentId, users }: Props) {
                     setSelectedUser(user);
                     setOpenDialog(true);
                   }}
+                  disabled={deletingUser}
                   className="absolute top-2 right-2"
                 >
                   <UserX className="w-4 h-4" />
@@ -112,7 +126,12 @@ export function DepartmentMembers({ departmentId, users }: Props) {
 
       {/* Confirmation Dialog */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent
+          showCloseButton={!deletingUser}
+          onInteractOutside={(e) => deletingUser && e.preventDefault()}
+          onEscapeKeyDown={(e) => deletingUser && e.preventDefault()}
+          className="sm:max-w-md"
+        >
           <DialogHeader>
             <DialogTitle>Remove Member</DialogTitle>
             <DialogDescription>
@@ -123,18 +142,31 @@ export function DepartmentMembers({ departmentId, users }: Props) {
 
           <div className="flex justify-center py-4">
             <Image
-              src="/illustrations/remove-user.svg"
+              src="/assets/empty-team.svg"
               alt="Remove confirmation"
-              width={120}
-              height={120}
+              width={170}
+              height={170}
             />
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpenDialog(false)}>
+            <Button
+              disabled={deletingUser}
+              variant="outline"
+              onClick={() => setOpenDialog(false)}
+            >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleRemove}>
+            <Button
+              variant="destructive"
+              disabled={deletingUser}
+              onClick={handleRemove}
+            >
+              {deletingUser ? (
+                <Loader2 className="animate-spin w-4 h-4" />
+              ) : (
+                <UserX className="w-4 h-4" />
+              )}
               Confirm Remove
             </Button>
           </DialogFooter>

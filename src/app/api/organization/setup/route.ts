@@ -14,11 +14,11 @@ const schema = yup.object({
 });
 type Data = yup.InferType<typeof schema>;
 
-
 const handlePut = async ({ data, user }: HandlerArgs<Data>) => {
   const { passcode, logoUrl } = data!;
 
   if (!passcode || !logoUrl) {
+
     return NextResponse.json(
       { error: "Passcode and logo URL are required" },
       { status: 400 }
@@ -28,7 +28,7 @@ const handlePut = async ({ data, user }: HandlerArgs<Data>) => {
   try {
     // Here you would typically update the organization in your database
     // For example:
-    const org = await Organization.findByPk(user.organizationId);
+    const org = await Organization.findByPk(user.organization.id);
     if (!org) {
       return NextResponse.json(
         { error: "Organization not found" },
