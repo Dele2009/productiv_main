@@ -20,6 +20,7 @@ const Organization = sequelize.define(
     industry: { type: DataTypes.STRING, allowNull: false },
     slug: DataTypes.STRING,
     passcode: { type: DataTypes.STRING, allowNull: true },
+    employeeIdPrefix: { type: DataTypes.STRING, allowNull: true },
     logoUrl: { type: DataTypes.STRING, allowNull: true },
     adminId: {
       type: DataTypes.UUID,

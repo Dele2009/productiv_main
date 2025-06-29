@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { ImagePlus, Loader2, UploadCloud } from "lucide-react";
 import { PasswordInput } from "./ui/passwordinput";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { Input } from "./ui/input";
 
 export function ForceSetupOrganizationModal() {
   const { data: session, update } = useSession();
@@ -26,12 +27,13 @@ export function ForceSetupOrganizationModal() {
   const org = session?.user?.organization;
 
   const [passcode, setPasscode] = useState("");
+  const [employeeIdPrefix, setEmployeeIdPrefix] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [password, setPassword] = useState("");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [ , setDragCounter] = useState(0);
+  const [, setDragCounter] = useState(0);
   const [dragging, setDragging] = useState(false);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -69,22 +71,23 @@ export function ForceSetupOrganizationModal() {
   };
 
   const handleSubmit = async () => {
-    if (!passcode || !password) {
-      toast.error("Please fill in all fields", {
-        position: "top-center"
-      });
+    if (!passcode || !password || !employeeIdPrefix) {
+      toast.error("Please fill in all fields", { position: "top-center" });
       return;
     }
+    
 
     try {
       setSubmitting(true);
       await axios.put("/api/organization/setup", {
         passcode,
         logoUrl,
+        employeeIdPrefix,
       });
+      
 
       toast.success("Organization setup saved. Re-authenticating...", {
-        position: "top-center"
+        position: "top-center",
       });
 
       const result = await signIn("credentials", {
@@ -96,7 +99,7 @@ export function ForceSetupOrganizationModal() {
 
       if (result?.error) {
         toast.error("Failed to refresh session: " + result.error, {
-          position: "top-center"
+          position: "top-center",
         });
         return;
       }
@@ -117,8 +120,6 @@ export function ForceSetupOrganizationModal() {
           "max-w-md w-full sm:rounded-lg pointer-events-auto transition-all",
           dragging && "border-dashed border-2 border-primary bg-muted"
         )}
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
         onDragOver={(e) => e.preventDefault()}
         onDragEnter={(e) => {
           e.preventDefault();
@@ -138,6 +139,7 @@ export function ForceSetupOrganizationModal() {
         }}
         onDrop={handleDrop}
         showCloseButton={false}
+        staticBackdrop
       >
         <div className="relative">
           {dragging && (
@@ -175,6 +177,25 @@ export function ForceSetupOrganizationModal() {
                 onChange={(e) => setPasscode(e.target.value)}
                 placeholder="Set a secure passcode"
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>
+                Employee ID Prefix{" "}
+                <span className="text-[0.7rem] text-primary">(required) *</span>
+              </Label>
+              <Input
+                value={employeeIdPrefix}
+                onChange={(e) =>
+                  setEmployeeIdPrefix(e.target.value.toUpperCase())
+                }
+                maxLength={6}
+                placeholder="e.g. EMP, STAFF, ORG-"
+              />
+              <p className="text-xs text-muted-foreground">
+                Used to generate employee IDs (e.g. EMP001). Must be uppercase
+                letters/numbers.
+              </p>
             </div>
 
             <div className="space-y-2">

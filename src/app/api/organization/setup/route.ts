@@ -9,21 +9,13 @@ const schema = yup.object({
   passcode: yup.string().required("Passcode is required"),
   logoUrl: yup
     .string()
-    .url("Logo URL must be a valid URL")
-    .required("Logo URL is required"),
+    .url("Logo URL must be a valid URL"),
+    employeeIdPrefix: yup.string().required("Id prefix is required").length(6, "Id prefix should not be more than 6 characters")
 });
 type Data = yup.InferType<typeof schema>;
 
 const handlePut = async ({ data, user }: HandlerArgs<Data>) => {
-  const { passcode, logoUrl } = data!;
-
-  if (!passcode || !logoUrl) {
-
-    return NextResponse.json(
-      { error: "Passcode and logo URL are required" },
-      { status: 400 }
-    );
-  }
+  const { passcode, logoUrl, employeeIdPrefix } = data!;
 
   try {
     // Here you would typically update the organization in your database
@@ -39,6 +31,7 @@ const handlePut = async ({ data, user }: HandlerArgs<Data>) => {
     await org.update({
       passcode,
       logoUrl,
+      employeeIdPrefix,
     });
 
     return NextResponse.json({
