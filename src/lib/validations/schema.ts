@@ -30,6 +30,6 @@ export const addEmployeeSchema = yup.object().shape({
   .string()
   .email("Enter a valid email")
   .required("Email is required"),
-  role: yup.string().oneOf(["member", "admin"]).required("Role is required"),
+  role: yup.string().oneOf(["member", "admin"]).optional().default("member"),
 });
 export type AddEmployeeSchema = yup.InferType<typeof addEmployeeSchema>;

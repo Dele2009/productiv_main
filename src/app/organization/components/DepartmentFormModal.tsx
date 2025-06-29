@@ -24,12 +24,14 @@ import {
 } from "@/lib/validations/schema";
 import axios from "axios";
 import { toast } from "sonner";
+import { useState } from "react";
 
 interface Props {
   onDepartmentCreated?: () => void;
 }
 
 export function DepartmentFormModal({ onDepartmentCreated }: Props) {
+  const [open, setOpen] = useState(false)
 
   const {
     register,
@@ -58,13 +60,18 @@ export function DepartmentFormModal({ onDepartmentCreated }: Props) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="w-5 h-5 mr-1" /> New Department
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent
+        showCloseButton={isSubmitting}
+        staticBackdrop={isSubmitting}
+        className="sm:max-w-lg"
+    
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <PlusCircle className="w-5 h-5" />

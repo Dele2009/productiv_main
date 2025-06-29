@@ -18,11 +18,11 @@ const sequelize = isProd
       },
     })
   : new Sequelize(
-      process.env.DB_NAME!,
-      process.env.DB_USER!,
-      process.env.DB_PASS!,
+      process.env.DATABASE_NAME!,
+      process.env.DATABASE_USER!,
+      process.env.DATABASE_PASS!,
       {
-        host: process.env.DB_HOST!,
+        host: process.env.DATABASE_HOST!,
         dialect: "mysql",
         dialectModule: mysql2,
         logging: false,

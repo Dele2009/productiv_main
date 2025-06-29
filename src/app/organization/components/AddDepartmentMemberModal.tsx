@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import { Loader2, UserPlus } from "lucide-react";
@@ -100,12 +100,12 @@ export function AddDepartmentMemberModal({ departmentId, onAdded }: Props) {
         <DialogHeader>
           <DialogTitle>Select Members</DialogTitle>
           <DialogDescription>
-            Choose users to add to this department.
+            Choose Employees to add to this department.
           </DialogDescription>
         </DialogHeader>
 
         <Input
-          placeholder="Search users"
+          placeholder="Search Employees"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="mb-4"
@@ -121,31 +121,34 @@ export function AddDepartmentMemberModal({ departmentId, onAdded }: Props) {
           <div className="text-center text-muted-foreground py-6">
             <Image
               src="/assets/empty-team.svg"
-              alt="No users"
+              alt="No Employees"
               width={140}
               height={140}
               className="mx-auto mb-4"
             />
-            <p>No matching users found</p>
+            <p>No matching Employees found</p>
           </div>
         ) : (
           <ScrollArea className="h-64 pr-4">
-            <ul className="space-y-2">
+            <ul className="space-y-3 divide-y divide-muted-foreground">
               {filtered.map((user) => (
-                <li key={user.id} className="flex items-center gap-3">
-                  <Checkbox
-                    checked={selected.has(user.id)}
-                    onCheckedChange={() => toggleSelect(user.id)}
-                  />
-                  <div>
-                    <p className="font-medium leading-none">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </li>
+                <>
+                  <li key={user.id} className="flex items-center gap-3 p-3">
+                    <Checkbox
+                      checked={selected.has(user.id)}
+                      onCheckedChange={() => toggleSelect(user.id)}
+                    />
+                    <div>
+                      <p className="font-medium leading-none">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </li>
+                </>
               ))}
             </ul>
+            <ScrollBar />
           </ScrollArea>
         )}
 

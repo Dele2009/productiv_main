@@ -128,8 +128,7 @@ export function DepartmentMembers({ departmentId, users }: Props) {
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent
           showCloseButton={!deletingUser}
-          onInteractOutside={(e) => deletingUser && e.preventDefault()}
-          onEscapeKeyDown={(e) => deletingUser && e.preventDefault()}
+          staticBackdrop={true}
           className="sm:max-w-md"
         >
           <DialogHeader>

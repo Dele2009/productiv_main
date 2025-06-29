@@ -42,7 +42,7 @@ export const DepartmentCard = ({ departments }: Props) => {
                 <CardTitle className="text-lg font-semibold">
                   {dept.name}
                 </CardTitle>
-                <CardDescription className="text-muted-foreground text-sm line-clamp-2">
+                <CardDescription className="text-muted-foreground text-sm line-clamp-1">
                   {dept.description || "No description provided."}
                 </CardDescription>
               </div>

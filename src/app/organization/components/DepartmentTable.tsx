@@ -39,7 +39,7 @@ export const DepartmentTable = ({ departments }: Props) => {
         <TableBody>
           {departments.map((dept) => (
             <TableRow key={dept.id}>
-              <TableCell>
+              <TableCell className="w-[250px]">
                 <div className="font-medium">{dept.name}</div>
                 <div className="text-sm text-muted-foreground line-clamp-2">
                   {dept.description || "No description provided."}

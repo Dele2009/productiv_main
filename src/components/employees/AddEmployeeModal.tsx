@@ -24,16 +24,15 @@ export function AddEmployeeModal({
   onCreated,
 }: {
   onCreated?: (data: any) => void;
-  }) {
-  const router = useRouter()
+}) {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<AddEmployeeSchema>({
     resolver: yupResolver(addEmployeeSchema),
     defaultValues: {
@@ -44,7 +43,6 @@ export function AddEmployeeModal({
   });
 
   const onSubmit = async (data: AddEmployeeSchema) => {
-    setLoading(true);
     try {
       const res = await axios.post("/api/organization/employees", data, {
         withCredentials: true,
@@ -53,13 +51,11 @@ export function AddEmployeeModal({
       onCreated?.(res.data);
       setOpen(false);
       reset();
-      router.refresh()
+      router.refresh();
     } catch (err: any) {
       toast.error(err?.response?.data?.error || "Something went wrong", {
         icon: <MessageCircleWarning />,
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -71,7 +67,10 @@ export function AddEmployeeModal({
         </Button>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent
+        showCloseButton={isSubmitting}
+        staticBackdrop={isSubmitting}
+      >
         <DialogHeader>
           <DialogTitle>Add New Employee</DialogTitle>
         </DialogHeader>
@@ -79,7 +78,11 @@ export function AddEmployeeModal({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label>Name</Label>
-            <Input {...register("name")} placeholder="John Doe" />
+            <Input
+              disabled={isSubmitting}
+              {...register("name")}
+              placeholder="John Doe"
+            />
             {errors.name && (
               <p className="text-sm text-red-500">{errors.name.message}</p>
             )}
@@ -87,29 +90,19 @@ export function AddEmployeeModal({
 
           <div className="space-y-2">
             <Label>Email</Label>
-            <Input {...register("email")} placeholder="john@example.com" />
+            <Input
+              disabled={isSubmitting}
+              {...register("email")}
+              placeholder="john@example.com"
+            />
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label>Role</Label>
-            <select
-              {...register("role")}
-              className="w-full border rounded px-3 py-2"
-            >
-              <option value="member">Member</option>
-              <option value="admin">Admin</option>
-            </select>
-            {errors.role && (
-              <p className="text-sm text-red-500">{errors.role.message}</p>
-            )}
-          </div>
-
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Add Employee
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Add Employees
           </Button>
         </form>
       </DialogContent>
